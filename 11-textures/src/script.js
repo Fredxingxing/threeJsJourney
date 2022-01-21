@@ -1,15 +1,16 @@
 import "./style.css";
 import * as THREE from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
+import * as dat from 'dat.gui'
 
-
+const gui = new dat.GUI()
 /**
  * Textures
  */
 const loadingManager = new THREE.LoadingManager()
 
 const textureLoader = new THREE.TextureLoader(loadingManager)
-const colorTexture = textureLoader.load('/textures/door/color.jpg')
+const colorTexture = textureLoader.load('/textures/minecraft.png')
 const alphaTexture = textureLoader.load('/textures/door/alpha.jpg')
 const heightTexture = textureLoader.load('/textures/door/height.jpg')
 const normalTexture = textureLoader.load('/textures/door/normal.jpg')
@@ -19,14 +20,17 @@ const roughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
 
 // colorTexture.repeat.x = 2
 // colorTexture.repeat.y = 3
-colorTexture.wrapS = THREE.RepeatWrapping
-colorTexture.wrapT = THREE.RepeatWrapping
+// colorTexture.wrapS = THREE.RepeatWrapping
+// colorTexture.wrapT = THREE.RepeatWrapping
 
 // colorTexture.offset.x = 0.5
 // colorTexture.offset.y = 0.5
-colorTexture.center.x = 0.5
-colorTexture.center.y = 0.5
-colorTexture.rotation = Math.PI * 0.25
+// colorTexture.center.x = 0.5
+// colorTexture.center.y = 0.5
+// colorTexture.rotation = Math.PI * 0.25
+colorTexture.generateMipmaps = false
+colorTexture.minFilter = THREE.NearestFilter
+colorTexture.magFilter = THREE.NearestFilter
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -38,9 +42,15 @@ const scene = new THREE.Scene();
  * Object
  */
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
-console.log(geometry.attributes.uv)
+
 const material = new THREE.MeshBasicMaterial({map: colorTexture});
-const mesh = new THREE.Mesh(geometry, material);
+const box = new THREE.Mesh(geometry, material);
+
+const sphere = new THREE.Mesh(
+    new THREE.SphereBufferGeometry(0.5, 64, 64),
+    material
+)
+
 scene.add(mesh);
 
 /**
@@ -70,7 +80,7 @@ window.addEventListener("resize", () => {
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(
-    75,
+    150,
     sizes.width / sizes.height,
     0.1,
     100
@@ -106,7 +116,6 @@ const tick = () => {
 
     // Render
     renderer.render(scene, camera);
-
     // Call tick again on the next frame
     window.requestAnimationFrame(tick);
 };
